@@ -77,23 +77,25 @@ int lowest_match(term *terms, int nterms, char *substr)
     int count = 0;
     while(low < high){
         mid = (low+high)/2;
-        if((check_s2_in_s1((terms)[mid].term,substr)) == 0) //check if the substirng matches
+        if((check_s2_in_s1((terms)[mid].term,substr)) < 0) //check if the substring matches
         {
            // printf("here");
-            final_mid = mid;
+           high = mid - 1;
            // low = high;
-           break;
         }
         else if ((check_s2_in_s1((terms)[mid].term,substr)) > 0)// check if substring is greater than mid
         {
             low = mid + 1;
         }
         else{
-            high = mid - 1;
+            final_mid = mid;
+            high = mid-1;
         }
-        count++;
         //printf("%d %d\n",low, high);
     }
+    return final_mid;
+    
+    /*
     if(low == high)
         final_mid = mid;
     else
@@ -102,13 +104,13 @@ int lowest_match(term *terms, int nterms, char *substr)
     {
         // iterate down the list until it doesnt match then return the lowest matching index
         final_mid--;
-    }
-    if(check_s2_in_s1((terms)[final_mid+1].term,substr) == 0){
-        return final_mid + 1;
-    }
-    else{
-        return -1;
-    }
+    } */
+    // if(check_s2_in_s1((terms)[final_mid].term,substr) == 0){
+    //     return final_mid;
+    // }
+    // else{
+    //     return -1;
+    // }
 }
 
 
@@ -122,42 +124,43 @@ int highest_match(struct term *terms, int nterms, char *substr)
     while(low < high){
            //     printf("%d %d\n",low, high);
         mid = (low+high)/2;
-        if((check_s2_in_s1((terms)[mid].term,substr)) == 0) //check if the substirng matches
+        if((check_s2_in_s1((terms)[mid].term,substr)) < 0) //check if the substirng matches
         {
           //  printf("here");
-            final_mid = mid;
+          high = mid - 1;
            // low = high;
-           break;
         }
         else if ((check_s2_in_s1((terms)[mid].term,substr)) > 0)// check if substring is greater than mid
         {
             low = mid + 1;
         }
         else{
-            high = mid - 1;
+            final_mid = mid;
+            low = mid+1;
         }
-        count++;
     }
+
+    return final_mid;
    // printf("%d %d\n",low, high);
-    if(low == high)
-        final_mid = low;
-    else
-        final_mid = mid;
-    //printf("%d\n",final_mid);
-   // printf("%s\n",(terms)[final_mid-1].term);
-    while ((check_s2_in_s1((terms)[final_mid].term,substr)) == 0) // the item at the index matches the substring
-    {
-        // iterate up the list until it doesnt match then return the highest matching index
-        final_mid++;
-    }
+//     if(low == high)
+//         final_mid = low;
+//     else
+//         final_mid = mid;
+//     //printf("%d\n",final_mid);
+//    // printf("%s\n",(terms)[final_mid-1].term);
+//     while ((check_s2_in_s1((terms)[final_mid].term,substr)) == 0) // the item at the index matches the substring
+//     {
+//         // iterate up the list until it doesnt match then return the highest matching index
+//         final_mid++;
+//     }
  //  printf("%d\n",final_mid);
    // printf("%s\n",(terms)[final_mid].term);
-    if(check_s2_in_s1((terms)[final_mid-1].term,substr) == 0){
-        return final_mid - 1;
-    }
-    else{
-        return -1;
-    }
+    // if(check_s2_in_s1((terms)[final_mid-1].term,substr) == 0){
+    //     return final_mid - 1;
+    // }
+    // else{
+    //     return -1;
+    // }
 }
 
 void autocomplete(term **answer, int *n_answer, term *terms, int nterms, char *substr)
@@ -192,12 +195,12 @@ void autocomplete(term **answer, int *n_answer, term *terms, int nterms, char *s
 // int main(void)
 // {
 
-//     /*
+    
 //     struct term *terms;
 //     int nterms;
 //     read_in_terms(&terms, &nterms, "wiktionary.txt");
-//     int low = lowest_match(terms, nterms, "apl");
-//     int high = highest_match(terms, nterms, "apl");
+//     int low = lowest_match(terms, nterms, "cus");
+//     int high = highest_match(terms, nterms, "cus");
 
 //     printf("%d %f, %s\n",low,terms[low].weight,terms[low].term);
 //     printf("%d %f, %s\n",high,terms[high].weight,terms[high].term);
@@ -211,5 +214,5 @@ void autocomplete(term **answer, int *n_answer, term *terms, int nterms, char *s
 //         printf("%f, %s\n",answer[i].weight,answer[i].term);
 //     } 
 //     //free allocated blocks here -- not required for the project, but good practice
-//     return 0; */
+//     return 0; 
 // }
