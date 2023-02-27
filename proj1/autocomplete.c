@@ -188,27 +188,28 @@ void autocomplete(term **answer, int *n_answer, term *terms, int nterms, char *s
     // sort answer by weight in non-increasing order
     qsort(*answer, *n_answer, sizeof(term), compare_weights);
 }
-/*
-int main(void)
-{
-    struct term *terms;
-    int nterms;
-    read_in_terms(&terms, &nterms, "wiktionary.txt");
-    int low = lowest_match(terms, nterms, "cus");
-    int high = highest_match(terms, nterms, "cus");
 
-    printf("%d %f, %s\n",low,terms[low].weight,terms[low].term);
-    printf("%d %f, %s\n",high,terms[high].weight,terms[high].term);
+// int main(void)
+// {
+
+//     /*
+//     struct term *terms;
+//     int nterms;
+//     read_in_terms(&terms, &nterms, "wiktionary.txt");
+//     int low = lowest_match(terms, nterms, "apl");
+//     int high = highest_match(terms, nterms, "apl");
+
+//     printf("%d %f, %s\n",low,terms[low].weight,terms[low].term);
+//     printf("%d %f, %s\n",high,terms[high].weight,terms[high].term);
 
 
-    struct term *answer;
-    int n_answer;
-    autocomplete(&answer, &n_answer, terms, nterms, "cus");
-    printf("n_answer = %d\n", n_answer);
-    for(int i = 0; i < n_answer; i++){
-        printf("%f, %s\n",answer[i].weight,answer[i].term);
-    } 
-    //free allocated blocks here -- not required for the project, but good practice
-    return 0;
-}
-*/
+//     struct term *answer;
+//     int n_answer;
+//     autocomplete(&answer, &n_answer, terms, nterms, "cus");
+//     printf("n_answer = %d\n", n_answer);
+//     for(int i = 0; i < n_answer; i++){
+//         printf("%f, %s\n",answer[i].weight,answer[i].term);
+//     } 
+//     //free allocated blocks here -- not required for the project, but good practice
+//     return 0; */
+// }
