@@ -107,11 +107,17 @@ void recover_path(double *best, int height, int width, int **path){
     *path = (int *)malloc(sizeof(int) * height);
 
     double min;
+    int pos; 
 
     for (int y = 0; y < height; y ++){
-        min = 
-        for (int x = 0; x < width; x ++){
-            
+        min = best[y*width];
+        pos = 0;
+        for (int x = 1; x < width; x ++){
+            if (best[y*width + x] < min){
+                min = best[y*width + x];
+                pos = x;
+            }
+            (*path)[y] = pos;
         }
     }
 }
@@ -131,10 +137,18 @@ int main(){
 
     dynamic_seam(grad, &best_arr);
 
+    int *path;
+
+    recover_path(best_arr, grad->height, grad->width,&path);
+
     for (int i = 0; i < 5; i ++){
         for (int j = 0; j < 6; j++){
             printf("%f, ", best_arr[i*6 + j]);
         }
         printf("\n");
+    }
+
+    for (int i = 0; i < 5; i++){
+        printf("%d ", path[i]);
     }
 }
