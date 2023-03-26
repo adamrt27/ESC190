@@ -117,7 +117,7 @@ void recover_path(double *best, int height, int width, int **path){
     // each row) and pos (the position in the row of min)
     double min;
     int pos; 
-    
+
     // goes through and find the lowest of each row, that is in the
     // 3 above it
     min = best[(height-1)*width];
@@ -146,46 +146,88 @@ void recover_path(double *best, int height, int width, int **path){
 
 void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
     // create dest which is an rbg_img of width one less than src
-    create_img(dest, src->height, src->width -1);
+    create_img(dest, src->height, (src->width -1));
+
+    int bool;
 
     // write from src to dest
     for (int y = 0; y < src->height; y ++){
+        bool = 0;
         for (int x = 0; x < src->width; x ++){
-            if (path[y] != x){
-                set_pixel(&dest, y, x, get_pixel(src, y, x, 0), get_pixel(src, y, x, 1), 
-                    get_pixel(src, y, x, 2));
+            //printf("%d", path[y]);
+            if (path[y] == x){
+                bool = 1;
+            } else{
+                if (bool == 0){
+                    set_pixel(*dest, y, x, get_pixel(src, y, x, 0), get_pixel(src, y, x, 1), 
+                        get_pixel(src, y, x, 2));
+                } else{
+                    set_pixel(*dest, y, x-1, get_pixel(src, y, x, 0), get_pixel(src, y, x, 1), 
+                        get_pixel(src, y, x, 2));
+                }
             }
         }
     }
 }
 
+
 int main(){
-
-    struct rgb_img *test;
-    read_in_img(&test, "6x5.bin");
-
+    struct rgb_img *im;
+    struct rgb_img *cur_im;
     struct rgb_img *grad;
-
-    calc_energy(test, &grad);
-
-    print_grad(grad);
-
-    double *best_arr;
-
-    dynamic_seam(grad, &best_arr);
-
+    double *best;
     int *path;
 
-    recover_path(best_arr, grad->height, grad->width,&path);
+    read_in_img(&im, "images/HJoceanSmall.bin");
+    
+    for(int i = 0; i < 100; i++){
+        printf("i = %d\n", i);
+        calc_energy(im,  &grad);
+        dynamic_seam(grad, &best);
+        recover_path(best, grad->height, grad->width, &path);
+        remove_seam(im, &cur_im, path);
 
-    for (int i = 0; i < 5; i ++){
-        for (int j = 0; j < 6; j++){
-            printf("%f, ", best_arr[i*6 + j]);
-        }
-        printf("\n");
-    }
+        char filename[200];
+        sprintf(filename, "images/testing/img%d.bin", i);
+        write_img(cur_im, filename);
 
-    for (int i = 0; i < 5; i++){
-        printf("%d ", path[i]);
+
+        destroy_image(im);
+        destroy_image(grad);
+        free(best);
+        free(path);
+        im = cur_im;
     }
+    destroy_image(im);
 }
+
+// int main(){
+
+//     struct rgb_img *test;
+//     read_in_img(&test, "6x5.bin");
+
+//     struct rgb_img *grad;
+
+//     calc_energy(test, &grad);
+
+//     print_grad(grad);
+
+//     double *best_arr;
+
+//     dynamic_seam(grad, &best_arr);
+
+//     int *path;
+
+//     recover_path(best_arr, grad->height, grad->width,&path);
+
+//     for (int i = 0; i < 5; i ++){
+//         for (int j = 0; j < 6; j++){
+//             printf("%f, ", best_arr[i*6 + j]);
+//         }
+//         printf("\n");
+//     }
+
+//     for (int i = 0; i < 5; i++){
+//         printf("%d ", path[i]);
+//     }
+// }
