@@ -190,20 +190,24 @@ void remove_seam_visualized(struct rgb_img *src, struct rgb_img **dest, int *pat
 
 
 int main(){
+    struct rgb_img *im_visualized;
     struct rgb_img *im;
+    
     struct rgb_img *cur_im;
+    struct rgb_img *cur_im_visualized;
     struct rgb_img *grad;
     double *best;
     int *path;
 
     read_in_img(&im, "images/HJoceanSmall.bin");
     
-    for(int i = 0; i < 150; i++){
+    for(int i = 0; i < 100; i++){
         printf("i = %d\n", i);
         calc_energy(im,  &grad);
         dynamic_seam(grad, &best);
         recover_path(best, grad->height, grad->width, &path);
         remove_seam_visualized(im, &cur_im, path);
+        //remove_seam_visualized(im_visualized, &cur_im_visualized, path);
 
         char filename[200];
         sprintf(filename, "images/testing/img%d.bin", i);
