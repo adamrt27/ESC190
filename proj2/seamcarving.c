@@ -77,13 +77,19 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad){
 }
 
 void dynamic_seam(struct rgb_img *grad, double **best_arr){
+    // allocate best_arr
     *best_arr = (double *)malloc(sizeof(double) * grad->height * grad->width);
+
+    // fill in first line of best_arr with first line of grad
     for (int i = 0; i < grad->width; i ++){
         (*best_arr)[i] = get_pixel(grad, 0, i, 0);
     }
 
+    // initialize variables to be used
     double temp1, temp2, temp3, mintemp;
 
+    // iterate through each row of grad, adding to the least of the 3 above,
+    // and adding that to best_arr
     for (int y = 1; y < grad->height; y ++){
         for (int x = 0; x < grad->width; x ++){
             temp1 = (*best_arr)[(y-1)*(grad->width) + x];
@@ -104,20 +110,51 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
 }
 
 void recover_path(double *best, int height, int width, int **path){
+    // allocates array path
     *path = (int *)malloc(sizeof(int) * height);
 
+    // initializes variables min (used to figure out the minumum of 
+    // each row) and pos (the position in the row of min)
     double min;
     int pos; 
+    
+    // goes through and find the lowest of each row, that is in the
+    // 3 above it
+    min = best[(height-1)*width];
+    pos = 0;
+    for (int x = 1; x < width; x ++){
+        if (best[(height-1)*width + x] < min){
+            min = best[(height-1)*width + x];
+            pos = x;
+        }
+        (*path)[height-1] = pos;
+    }
 
-    for (int y = 0; y < height; y ++){
+
+    for (int y = height - 2; y >= 0; y --){
         min = best[y*width];
         pos = 0;
-        for (int x = 1; x < width; x ++){
+        for (int x = (*path)[y+1] -1; x <= (*path)[y+1] +1; x ++){
             if (best[y*width + x] < min){
                 min = best[y*width + x];
                 pos = x;
             }
             (*path)[y] = pos;
+        }
+    }
+}
+
+void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
+    // create dest which is an rbg_img of width one less than src
+    create_img(dest, src->height, src->width -1);
+
+    // write from src to dest
+    for (int y = 0; y < src->height; y ++){
+        for (int x = 0; x < src->width; x ++){
+            if (path[y] != x){
+                set_pixel(&dest, y, x, get_pixel(src, y, x, 0), get_pixel(src, y, x, 1), 
+                    get_pixel(src, y, x, 2));
+            }
         }
     }
 }
