@@ -132,8 +132,8 @@ void recover_path(double *best, int height, int width, int **path){
 
 
     for (int y = height - 2; y >= 0; y --){
-        min = best[y*width];
-        pos = 0;
+        min = best[y*width + (*path)[y+1]];
+        pos = (*path)[y+1];
         for (int x = (*path)[y+1] -1; x <= (*path)[y+1] +1; x ++){
             if (best[y*width + x] < min){
                 min = best[y*width + x];
@@ -170,6 +170,24 @@ void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
     }
 }
 
+void remove_seam_visualized(struct rgb_img *src, struct rgb_img **dest, int *path){
+    // create dest which is an rbg_img of width one less than src
+    create_img(dest, src->height, (src->width));
+
+    // write from src to dest
+    for (int y = 0; y < src->height; y ++){
+        for (int x = 0; x < src->width; x ++){
+            //printf("%d", path[y]);
+            if (path[y] == x){
+                set_pixel(*dest, y, x, 0, 0, 0);
+            } else{
+                set_pixel(*dest, y, x, get_pixel(src, y, x, 0), get_pixel(src, y, x, 1), 
+                        get_pixel(src, y, x, 2));
+            }
+        }
+    }
+}
+
 
 int main(){
     struct rgb_img *im;
@@ -180,17 +198,28 @@ int main(){
 
     read_in_img(&im, "images/HJoceanSmall.bin");
     
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 150; i++){
         printf("i = %d\n", i);
         calc_energy(im,  &grad);
         dynamic_seam(grad, &best);
         recover_path(best, grad->height, grad->width, &path);
-        remove_seam(im, &cur_im, path);
+        remove_seam_visualized(im, &cur_im, path);
 
         char filename[200];
         sprintf(filename, "images/testing/img%d.bin", i);
         write_img(cur_im, filename);
 
+        // if (i == 55){
+        //     for (int i = 0; i < im->height; i ++){
+        //         for (int j = 0; j < im->width; j++){
+        //             printf("%f, ", best[i*6 + j]);
+        //         }
+        //         printf("\n");
+        //     }
+        //     for (int i = 0; i < im->height; i ++){
+        //         printf("%d, ", path[i]);
+        //     }
+        // }
 
         destroy_image(im);
         destroy_image(grad);
