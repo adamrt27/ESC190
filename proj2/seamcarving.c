@@ -5,6 +5,22 @@
 #include <stdlib.h>
 #include <math.h>
 
+int min(double a, double b, double c){
+    if (a < b){
+        if (a < c){
+            return a;
+        } else{
+            return c;
+        }
+    } else{
+        if (b < c){
+            return b;
+        } else{
+            return c;
+        }
+    }
+}
+
 void calc_energy(struct rgb_img *im, struct rgb_img **grad){
     // define all variables to be used
     double R_x, G_x, B_x, R_y, G_y, B_y, delta_x, delta_y;
@@ -66,31 +82,42 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
         (*best_arr)[i] = get_pixel(grad, 0, i, 0);
     }
 
-    double temp1, temp2, temp3, min;
+    double temp1, temp2, temp3, mintemp;
 
     for (int y = 1; y < grad->height; y ++){
         for (int x = 0; x < grad->width; x ++){
             temp1 = (*best_arr)[(y-1)*(grad->width) + x];
             if (x != 0){
                 temp2 = (*best_arr)[(y-1)*(grad->width) + x - 1];
+            } else{
+                temp2 = temp1;
             }
             if (x != (grad->width - 1)){
                 temp3 = (*best_arr)[(y-1)*(grad->width) + x + 1];
-            }
-            if (temp1 < temp2){
-                min = temp1;
             } else{
-                min = temp2;
+                temp3 = temp1;
             }
-            if (min > temp3){
-                min = temp3;
-            }
-            (*best_arr)[y*(grad->width) + x] = get_pixel(grad, y, x, 0) + min;
+            mintemp = min(temp1, temp2, temp3);
+            (*best_arr)[y*(grad->width) + x] = get_pixel(grad, y, x, 0) + mintemp;
+        }
+    }
+}
+
+void recover_path(double *best, int height, int width, int **path){
+    *path = (int *)malloc(sizeof(int) * height);
+
+    double min;
+
+    for (int y = 0; y < height; y ++){
+        min = 
+        for (int x = 0; x < width; x ++){
+            
         }
     }
 }
 
 int main(){
+
     struct rgb_img *test;
     read_in_img(&test, "6x5.bin");
 
