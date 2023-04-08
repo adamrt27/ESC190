@@ -1,6 +1,4 @@
 #include "seamcarving.h"
-#include "c_img.h"
-#include "c_img.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -199,7 +197,38 @@ int main(){
 
     read_in_img(&im, "images/HJoceanSmall.bin");
     
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 150; i++){
+        printf("i = %d\n", i);
+        calc_energy(im,  &grad);
+        dynamic_seam(grad, &best);
+        recover_path(best, grad->height, grad->width, &path);
+        remove_seam(im, &cur_im, path);
+
+        char filename[200];
+        sprintf(filename, "images/testing/img%d.bin", i);
+        write_img(cur_im, filename);
+
+        // if (i == 55){
+        //     for (int i = 0; i < im->height; i ++){
+        //         for (int j = 0; j < im->width; j++){
+        //             printf("%f, ", best[i*6 + j]);
+        //         }
+        //         printf("\n");
+        //     }
+        //     for (int i = 0; i < im->height; i ++){
+        //         printf("%d, ", path[i]);
+        //     }
+        // }
+
+        destroy_image(im);
+        destroy_image(grad);
+        free(best);
+        free(path);
+        im = cur_im;
+    }
+
+    read_in_img(&im, "images/HJoceanSmall.bin");
+    for(int i = 0; i < 150; i++){
         printf("i = %d\n", i);
         calc_energy(im,  &grad);
         dynamic_seam(grad, &best);
@@ -207,7 +236,7 @@ int main(){
         remove_seam_visualized(im, &cur_im, path);
 
         char filename[200];
-        sprintf(filename, "images/testing/img%d.bin", i);
+        sprintf(filename, "images/testing_visual/img%d.bin", i);
         write_img(cur_im, filename);
 
         // if (i == 55){
@@ -261,3 +290,4 @@ int main(){
 //         printf("%d ", path[i]);
 //     }
 // }
+
